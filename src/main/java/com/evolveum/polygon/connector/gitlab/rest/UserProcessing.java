@@ -227,7 +227,7 @@ public class UserProcessing extends ObjectProcessing {
 		userObjClassBuilder.addAttributeInfo(attrLastActivityOnBuilder.build());
 
 		AttributeInfoBuilder attrColorSchemeBuilder = new AttributeInfoBuilder(ATTR_COLOR_SCHEME_ID);
-		attrColorSchemeBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrColorSchemeBuilder.setType(Integer.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		userObjClassBuilder.addAttributeInfo(attrColorSchemeBuilder.build());
 
 		AttributeInfoBuilder attrCurrSingInAtBuilder = new AttributeInfoBuilder(ATTR_CURR_SING_IN_AT);
@@ -235,11 +235,11 @@ public class UserProcessing extends ObjectProcessing {
 		userObjClassBuilder.addAttributeInfo(attrCurrSingInAtBuilder.build());
 
 		AttributeInfoBuilder attrCanCreateProjBuilder = new AttributeInfoBuilder(ATTR_CAN_CREATE_PROJ);
-		attrCanCreateProjBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrCanCreateProjBuilder.setType(Boolean.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		userObjClassBuilder.addAttributeInfo(attrCanCreateProjBuilder.build());
 
 		AttributeInfoBuilder attrTwoFactorEnabledBuilder = new AttributeInfoBuilder(ATTR_TWO_FACTOR_ENABLED);
-		attrTwoFactorEnabledBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrTwoFactorEnabledBuilder.setType(Boolean.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		userObjClassBuilder.addAttributeInfo(attrTwoFactorEnabledBuilder.build());
 
 		AttributeInfoBuilder attrWebUrlBuilder = new AttributeInfoBuilder(ATTR_WEB_URL);
@@ -596,6 +596,13 @@ public class UserProcessing extends ObjectProcessing {
 	}
 
 	public void executeQueryForUser(Filter query, ResultsHandler handler, OperationOptions options) {
+		Map<String,String> parameters = new HashMap<>();
+
+		if (!configuration.getOnlyHumanAccounts().equals("all")){
+			parameters.put("humans", configuration.getOnlyHumanAccounts());
+		}
+
+
 		if (query instanceof EqualsFilter) {
 
 			if (((EqualsFilter) query).getAttribute() instanceof Uid) {
@@ -615,7 +622,7 @@ public class UserProcessing extends ObjectProcessing {
 				if (allValues == null || allValues.get(0) == null) {
 					invalidAttributeValue("Name", query);
 				}
-				Map<String, String> parameters = new HashMap<String, String>();
+
 				parameters.put(ATTR_USERNAME, allValues.get(0).toString());
 				JSONArray users = (JSONArray) executeGetRequest(USERS, parameters, options, true);
 				processingObjectFromGET(users, handler);
@@ -626,7 +633,7 @@ public class UserProcessing extends ObjectProcessing {
 				if (allValues == null || allValues.get(0) == null) {
 					invalidAttributeValue("Name", query);
 				}
-				Map<String, String> parameters = new HashMap<String, String>();
+
 				parameters.put(ATTR_PROVIDER, ((String) allValues.get(0)).split(":")[0].toString());
 				parameters.put(ATTR_EXTERN_UID, ((String) allValues.get(0)).split(":")[1].toString());
 				JSONArray users = (JSONArray) executeGetRequest(USERS, parameters, options, true);
@@ -638,7 +645,7 @@ public class UserProcessing extends ObjectProcessing {
 				if (allValues == null || allValues.get(0) == null) {
 					invalidAttributeValue("Name", query);
 				}
-				Map<String, String> parameters = new HashMap<String, String>();
+
 				parameters.put(ATTR_EXTERNAL, allValues.get(0).toString());
 				JSONArray users = (JSONArray) executeGetRequest(USERS, parameters, options, true);
 				processingObjectFromGET(users, handler);
@@ -660,7 +667,6 @@ public class UserProcessing extends ObjectProcessing {
 				if (allValues == null || allValues.get(0) == null) {
 					invalidAttributeValue("__NAME__", query);
 				}
-				Map<String, String> parameters = new HashMap<String, String>();
 				parameters.put(SEARCH, allValues.get(0).toString());
 				JSONArray users = (JSONArray) executeGetRequest(USERS, parameters, options, true);
 				processingObjectFromGET(users, handler);
@@ -673,7 +679,7 @@ public class UserProcessing extends ObjectProcessing {
 				throw new InvalidAttributeValueException(sb.toString());
 			}
 		} else if (query == null) {
-			JSONArray users = (JSONArray) executeGetRequest(USERS, null, options, true);
+			JSONArray users = (JSONArray) executeGetRequest(USERS, parameters, options, true);
 			processingObjectFromGET(users, handler);
 		} else {
 			StringBuilder sb = new StringBuilder();

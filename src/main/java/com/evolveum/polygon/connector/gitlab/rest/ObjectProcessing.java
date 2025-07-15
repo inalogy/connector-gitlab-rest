@@ -32,14 +32,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -81,6 +74,7 @@ public class ObjectProcessing {
 	protected static final String MEMBERS = "/members";
 	protected static final String SHARE = "/share";
 	protected static final String KEYS = "/keys";
+	protected static final String SERVICE_ACCOUNTS = "/service_accounts";
 
 	protected static final String USER = "user";
 	protected static final String GROUP = "group";
@@ -91,6 +85,7 @@ public class ObjectProcessing {
 	protected static final String PAGE = "page";
 	protected static final String PER_PAGE = "per_page";
 	protected static final String PROJECT_NAME = "Project";
+	protected static final String SERVICE_ACCOUNT_NAME = "ServiceAccount";
 
 	protected static final String UPLOAD_URL = "/uploads/-/";
 	protected static final String PROTOCOL_APPENDER = "://";
@@ -369,6 +364,20 @@ public class ObjectProcessing {
 		return new Uid(stringId);
 	}
 
+	protected Uid patchRequest(Uid uid, String path, JSONObject json, OperationOptions options) {
+		URI uri;
+		try {
+			uri = getURIBuilder()
+					.setPath(path + "/" + uid.getUidValue())
+					.build();
+		} catch (URISyntaxException e) {
+			throw new ConnectorException("Cannot build URI for PATCH: " + e.getMessage(), e);
+		}
+		HttpPatch patch = new HttpPatch(uri);
+		JSONObject response = callRequest(patch, json, true);
+		return new Uid(String.valueOf(response.getInt("id")));
+	}
+
 	protected void putAttrIfExists(Set<Attribute> attributes, String attrNameFromMP, Class<?> type, JSONObject json) {
 
 		LOGGER.info("PutAttrIfExists attributes: {0}, attrNameFromMP: {1}, type {2}, json: {3}", attributes.toString(),
@@ -421,6 +430,17 @@ public class ObjectProcessing {
 			if (valueAttr != null) {
 				json.put(attrNameToGitlab, String.valueOf(valueAttr));
 			}
+		}
+	}
+
+	protected void putOptionalUsername(Set<Attribute> attributes,
+									 JSONObject json) {
+		String mpName = Name.NAME;
+		String gitlabKey = ATTR_USERNAME;
+
+		String username = getAttr(attributes, mpName, String.class, null);
+		if (username != null) {
+			json.put(gitlabKey, username);
 		}
 	}
 
