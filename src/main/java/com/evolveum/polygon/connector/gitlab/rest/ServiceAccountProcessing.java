@@ -37,6 +37,7 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 	// optional attributes
 	private static final String ATTR_MAIL = "email";
 	private static final String ATTR_PUBLIC_EMAIL = "public_email";
+	private static final String ATTR_GROUP_ID = "groupId";
 
 	public ServiceAccountProcessing(GitlabRestConfiguration configuration, CloseableHttpClient httpclient) {
 		super(configuration, httpclient);
@@ -58,6 +59,15 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 				.setReadable(true);
 		serviceAccountObjClassBuilder.addAttributeInfo(attrNameBuilder.build());
 
+		AttributeInfoBuilder attrGroupIdBuilder = new AttributeInfoBuilder(ATTR_GROUP_ID);
+		attrGroupIdBuilder.setRequired(true).setType(Integer.class).setCreateable(true).setUpdateable(true)
+				.setReadable(true);
+		serviceAccountObjClassBuilder.addAttributeInfo(attrGroupIdBuilder.build());
+
+		AttributeInfoBuilder attrPublicEmailBuilder = new AttributeInfoBuilder(ATTR_PUBLIC_EMAIL);
+		attrPublicEmailBuilder.setRequired(true).setType(String.class).setCreateable(true).setUpdateable(true)
+				.setReadable(true);
+		serviceAccountObjClassBuilder.addAttributeInfo(attrPublicEmailBuilder.build());
 
 
 		// __ENABLE__
@@ -76,7 +86,7 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		putRequestedAttrIfExists(create, attributes, ATTR_NAME, json);
 
 		// 2) Optional: "username"
-		putOptionalUsername(attributes, json); /*TODO may cause problems !!! TEST IT*/
+		putOptionalUsername(attributes, json);
 
 		// 3) Optional: "email"
 		putAttrIfExists(attributes, ATTR_MAIL, String.class, json);
@@ -104,6 +114,11 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 
 		getIfExists(user, ATTR_MAIL, String.class, builder);
 		getIfExists(user, ATTR_NAME, String.class, builder);
+
+		if (user.has("provisioned_by_group_id") && !user.isNull("provisioned_by_group_id")) {
+			Integer groupId = ((Number) user.get("provisioned_by_group_id")).intValue();
+			builder.addAttribute(ATTR_GROUP_ID, groupId);
+		}
 
 		return builder;
 	}
@@ -155,6 +170,13 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 	public void executeQueryForServiceAccount(Filter query,
 											  ResultsHandler handler,
 											  OperationOptions options) {
+
+		Boolean useDefaultEndpoint = false;
+		Set<Integer> allowedGroupIds = lookupAllowedGroupIds(options);
+		if (allowedGroupIds.isEmpty()) {
+			LOGGER.info("No groups configured or none found in GitLab.");
+			useDefaultEndpoint = true;
+		}
 		// 1) EqualsFilter on Uid: GET /users/{id}
 		if (query instanceof EqualsFilter
 				&& ((EqualsFilter) query).getAttribute() instanceof Uid) {
@@ -165,7 +187,18 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 			}
 			String path = USERS + "/" + uid.getUidValue();
 			JSONObject svc = (JSONObject) executeGetRequest(path, null, options, false);
-			processingObjectFromGET(svc, handler);
+
+			boolean hasGroup = svc.has("provisioned_by_group_id")
+					&& !svc.isNull("provisioned_by_group_id");
+			Integer groupId = null;
+			if (hasGroup) {
+				groupId = svc.getInt("provisioned_by_group_id");
+			}
+
+			if ( useDefaultEndpoint
+					|| (hasGroup && allowedGroupIds.contains(groupId)) ) {
+				processingObjectFromGET(svc, handler);
+			}
 
 			// 2) EqualsFilter on Name: GET /users?username={name}
 		} else if (query instanceof EqualsFilter
@@ -179,13 +212,40 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 			Map<String,String> params = new HashMap<>();
 			params.put("username", username);
 			JSONArray list = (JSONArray) executeGetRequest(USERS, params, options, true);
-			processingObjectFromGET(list, handler);
+
+			for (Object o : list) {
+				JSONObject svc = (JSONObject) o;
+
+				boolean hasGroup = svc.has("provisioned_by_group_id")
+						&& !svc.isNull("provisioned_by_group_id");
+				Integer groupId = null;
+				if (hasGroup) {
+					groupId = svc.getInt("provisioned_by_group_id");
+				}
+
+				if ( useDefaultEndpoint
+						|| (hasGroup && allowedGroupIds.contains(groupId)) ) {
+					processingObjectFromGET(svc, handler);
+				}
+			}
 
 			// 3) No filter: list all service accounts
 		} else if (query == null) {
-			JSONArray list = (JSONArray) executeGetRequest(SERVICE_ACCOUNTS, null, options, true);
-			processingObjectFromGET(list, handler);
-
+			if (useDefaultEndpoint){
+				JSONArray list = (JSONArray) executeGetRequest(SERVICE_ACCOUNTS, null, options, true);
+				processingObjectFromGET(list, handler);
+			} else {
+				for (Integer groupId : allowedGroupIds) {
+					String path = GROUPS + "/" + groupId + SERVICE_ACCOUNTS;
+					JSONArray saList = (JSONArray) executeGetRequest(
+							path, null, options, true);
+					for (Object o : saList) {
+						JSONObject sa = (JSONObject) o;
+						sa.put("provisioned_by_group_id", groupId);
+					}
+					processingObjectFromGET(saList, handler);
+				}
+			}
 		} else {
 			String msg = "Unsupported filter for serviceAccount: " + query;
 			LOGGER.error(msg);
@@ -226,5 +286,26 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		}
 		LOGGER.info("getGroupsForFilter End");
 		return groupArr;
+	}
+
+	private Set<Integer> lookupAllowedGroupIds(OperationOptions options) {
+		// 1) split & normalize the names
+		Map<String,String> nameMap = getGroupsForFilter(configuration.getGroupsToManage());
+		if (nameMap == null || nameMap.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		JSONArray allGroups = (JSONArray) executeGetRequest(GROUPS, null, options, true);
+
+		Set<Integer> ids = new HashSet<>();
+		for (Object o : allGroups) {
+			JSONObject g = (JSONObject) o;
+			String gitlabName = ((String) g.get("name")).toLowerCase();
+			String gitlabPath = ((String) g.get("path")).toLowerCase();
+			if (nameMap.containsKey(gitlabName) || nameMap.containsKey(gitlabPath)) {
+				ids.add(((Number) g.get("id")).intValue());
+			}
+		}
+		return ids;
 	}
 }

@@ -1,0 +1,5 @@
+<org xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+     oid="c2c9d0d0-b558-4d41-9cd3-8dee344d394a">
+    <name>Groups</name>
+    <identifier>Top level of group</identifier>
+</org>

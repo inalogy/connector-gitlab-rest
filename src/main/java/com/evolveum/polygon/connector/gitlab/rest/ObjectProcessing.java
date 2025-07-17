@@ -30,8 +30,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
@@ -497,7 +499,7 @@ public class ObjectProcessing {
 		}
 	}
 	
-	protected int getTotalPagesByPath(String path) {
+	/*protected int getTotalPagesByPath(String path) {
 		LOGGER.info("getTotalPagesByPath path {0}", path);
 		URIBuilder uribuilder = getURIBuilder();
 		uribuilder.clearParameters();
@@ -519,9 +521,9 @@ public class ObjectProcessing {
 					.append(e.getLocalizedMessage());
 			throw new ConnectorException(sb.toString(), e);
 		}
-	}
+	}*/
 
-	protected Object executeGetRequest(String path, Map<String, String> parameters, OperationOptions options,
+	/*protected Object executeGetRequest(String path, Map<String, String> parameters, OperationOptions options,
 			Boolean resultIsArray) {
 		LOGGER.info("executeGetRequest path {0}, parameters: {1}, options: {2}, result is array: {3}", path, parameters,
 				options, resultIsArray);
@@ -580,7 +582,118 @@ public class ObjectProcessing {
 					.append(e.getLocalizedMessage());
 			throw new ConnectorException(sb.toString(), e);
 		}
+	}*/
+
+	protected Object executeGetRequest(
+			String path,
+			Map<String, String> parameters,
+			OperationOptions options,
+			Boolean resultIsArray) {
+
+		LOGGER.info("executeGetRequest path {0}, parameters: {1}, options: {2}, resultIsArray: {3}",
+				path, parameters, options, resultIsArray);
+
+		URIBuilder uriBuilder = getURIBuilder();
+		uriBuilder.clearParameters();
+		uriBuilder.setPath(path);
+		if (options != null) {
+			Integer page    = options.getPagedResultsOffset();
+			Integer perPage = options.getPageSize();
+			if (page    != null) uriBuilder.addParameter("page",     page.toString());
+			if (perPage != null) uriBuilder.addParameter("per_page", perPage.toString());
+		}
+		if (parameters != null) {
+			parameters.forEach((k, v) -> { if (v != null) uriBuilder.addParameter(k, v); });
+		}
+
+		try {
+			String nextUrl = uriBuilder.build().toString();
+			JSONArray merged = new JSONArray();
+			Object single = null;
+
+			do {
+				HttpGet req = new HttpGet(nextUrl);
+				addAuthHeaders(req);
+
+				CloseableHttpResponse resp = execute(req);
+				int status = resp.getStatusLine().getStatusCode();
+				if (status < 200 || status >= 300) {
+					String err = EntityUtils.toString(resp.getEntity());
+					resp.close();
+					throw new ConnectorException("GitLab paging request failed: HTTP "
+							+ status + " → " + err);
+				}
+
+				String body = EntityUtils.toString(resp.getEntity());
+				String trimmed = body.trim();
+				if (resultIsArray) {
+					JSONArray pageArr;
+					if (trimmed.startsWith("[")) {
+						pageArr = new JSONArray(trimmed);
+					} else if (trimmed.startsWith("{")) {
+						pageArr = new JSONArray().put(new JSONObject(trimmed));
+					} else {
+						pageArr = new JSONArray();
+					}
+					for (int i = 0; i < pageArr.length(); i++) {
+						merged.put(pageArr.get(i));
+					}
+				} else if (single == null) {
+					single = new JSONObject(trimmed);
+				}
+
+				String xNext = getHeaderValue(resp, "X-Next-Page");
+				if (StringUtils.isNotBlank(xNext)) {
+					nextUrl = new URIBuilder(nextUrl)
+							.setParameter("page", xNext)
+							.build()
+							.toString();
+				} else {
+					nextUrl = parseLinkHeader(resp.getFirstHeader("Link"));
+				}
+
+				resp.close();
+			}
+			while (resultIsArray && nextUrl != null);
+
+			return resultIsArray ? merged : single;
+		}
+		catch (URISyntaxException | IOException e) {
+			throw new ConnectorException("Error paginating “" + path + "”: " + e.getMessage(), e);
+		}
 	}
+
+	/** Adds PRIVATE-TOKEN + JSON headers to each request */
+	private void addAuthHeaders(HttpRequestBase req) {
+		StringBuilder token = new StringBuilder();
+		if (this.configuration.getPrivateToken() != null) {
+			this.configuration.getPrivateToken().access(chars -> token.append(chars));
+		}
+		req.addHeader("PRIVATE-TOKEN", token.toString());
+		req.addHeader("Content-Type", "application/json; charset=utf-8");
+	}
+
+	/** Reads a single header’s value (or null) */
+	private String getHeaderValue(HttpResponse resp, String name) {
+		Header h = resp.getFirstHeader(name);
+		return (h != null) ? h.getValue() : null;
+	}
+
+	/** Parses Link: header to find rel="next" URL (or null) */
+	private String parseLinkHeader(Header linkHeader) {
+		if (linkHeader == null) return null;
+		for (String part : linkHeader.getValue().split(",")) {
+			if (part.contains("rel=\"next\"")) {
+				int s = part.indexOf('<') + 1, e = part.indexOf('>');
+				if (s > 0 && e > s) {
+					return part.substring(s, e);
+				}
+			}
+		}
+		return null;
+	}
+
+
 
 	protected int getUIDIfExists(JSONObject object, String nameAttr, ConnectorObjectBuilder builder) {
 		if (object.has(nameAttr)) {
@@ -898,7 +1011,7 @@ public class ObjectProcessing {
 		}
 	}
 
-	private int getTotalPages(HttpRequestBase request) {
+	/*private int getTotalPages(HttpRequestBase request) {
 		LOGGER.info("request X-Total-Pages: {0}", request.getURI());
 		int totalPages;
 
@@ -937,6 +1050,6 @@ public class ObjectProcessing {
 			destinationArray.put(sourceArray.getJSONObject(i));
 		}
 		return destinationArray;
-	}
+	}*/
 
 }
