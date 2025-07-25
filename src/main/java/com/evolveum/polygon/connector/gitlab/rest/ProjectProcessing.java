@@ -245,7 +245,7 @@ public class ProjectProcessing extends GroupOrProjectProcessing {
 		projectObjClassBuilder.addAttributeInfo(attrCreatorIDBuilder.build());
 
 		AttributeInfoBuilder attrNameSpaceIdBuilder = new AttributeInfoBuilder(ATTR_NAMESPACE_ID);
-		attrNameSpaceIdBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrNameSpaceIdBuilder.setType(Integer.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		projectObjClassBuilder.addAttributeInfo(attrNameSpaceIdBuilder.build());
 
 		AttributeInfoBuilder attrNameSpaceNameBuilder = new AttributeInfoBuilder(ATTR_NAMESPACE_NAME);

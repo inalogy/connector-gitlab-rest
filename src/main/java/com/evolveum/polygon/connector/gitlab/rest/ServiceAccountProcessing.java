@@ -94,6 +94,29 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		// 4) Optional: "public_email"
 		putAttrIfExists(attributes, ATTR_PUBLIC_EMAIL, String.class, json);
 
+		Integer groupId = null;
+		for (Attribute attr : attributes) {
+			if (ATTR_GROUP_ID.equals(attr.getName()) && attr.getValue() != null && !attr.getValue().isEmpty()) {
+
+				Object raw = attr.getValue().get(0);
+				groupId = (raw instanceof Integer)
+						? (Integer) raw
+						: Integer.valueOf(raw.toString());
+				break;
+			}
+		}
+
+		if (groupId != null) {
+			String base = GROUPS + "/" + groupId + SERVICE_ACCOUNTS;
+			if (create) {
+				// POST /groups/{groupId}/service_accounts
+				return createPutOrPostRequest(null, base, json, true);
+			} else {
+				// PATCH /groups/{groupId}/service_accounts/{saId}
+				return patchRequest(uid, base, json, options);
+			}
+		}
+
 		if (create) {
 			// POST /service_accounts
 			return createPutOrPostRequest(null, SERVICE_ACCOUNTS, json, true);
