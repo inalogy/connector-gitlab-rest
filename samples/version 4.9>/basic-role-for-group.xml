@@ -1,0 +1,16 @@
+<role xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      oid="e89d7137-3dd2-4126-bacd-7852a4cb2dba"
+      version="2">
+    <name>GitLab role for group</name>
+    <iteration>0</iteration>
+    <iterationToken/>
+    <inducement>
+        <construction>
+            <resourceRef oid="90f3f8b4-daa8-4d22-8cb6-39a934acc558"
+                         type="c:ResourceType"><!-- Gitlab --></resourceRef>
+            <kind>entitlement</kind>
+            <intent>Group</intent>
+        </construction>
+    </inducement>
+</role>

@@ -1,0 +1,175 @@
+<role xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+      xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+      xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+      oid="36b30bf0-89c9-47e5-a29d-b8f2c4025903">
+    <name>reporter</name>
+    <inducement>
+        <construction>
+            <resourceRef oid="90f3f8b4-daa8-4d22-8cb6-39a934acc558" type="ResourceType"/>
+            <strength>strong</strength>
+            <kind>account</kind>
+            <intent>default</intent>
+            <association>
+                <ref>ri:userReporter2groupRef</ref>
+                <outbound>
+                    <name>account-group-outbound</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <associationConstruction>
+                            <objectRef>
+                                <mapping>
+                                    <expression>
+                                        <associationFromLink/>
+                                    </expression>
+                                </mapping>
+                            </objectRef>
+                        </associationConstruction>
+                    </expression>
+                </outbound>
+            </association>
+        </construction>
+        <orderConstraint>
+            <orderMin>1</orderMin>
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <focusType>UserType</focusType>
+        <condition>
+            <expression>
+                <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:type="c:ScriptExpressionEvaluatorType">
+                    <code><![CDATA[
+                        return midpoint.hasArchetype(focus,"550c4c5d-5cc8-485f-b53b-249fd3e0efa5")
+                        ]]></code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+
+    <inducement>
+        <construction>
+            <resourceRef oid="90f3f8b4-daa8-4d22-8cb6-39a934acc558" type="ResourceType"/>
+            <strength>strong</strength>
+            <kind>account</kind>
+            <intent>default</intent>
+            <association>
+                <ref>ri:userReporter2projectRef</ref>
+                <outbound>
+                    <name>account-group-outbound</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <associationConstruction>
+                            <objectRef>
+                                <mapping>
+                                    <expression>
+                                        <associationFromLink/>
+                                    </expression>
+                                </mapping>
+                            </objectRef>
+                        </associationConstruction>
+                    </expression>
+                </outbound>
+            </association>
+        </construction>
+        <orderConstraint>
+            <orderMin>1</orderMin>
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <focusType>UserType</focusType>
+        <condition>
+            <expression>
+                <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:type="c:ScriptExpressionEvaluatorType">
+                    <code><![CDATA[
+                        return midpoint.hasArchetype(focus,"550c4c5d-5cc8-485f-b53b-249fd3e0efa5")
+                        ]]></code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+
+    <inducement>
+        <construction>
+            <resourceRef oid="90f3f8b4-daa8-4d22-8cb6-39a934acc558" type="ResourceType"/>
+            <strength>strong</strength>
+            <kind>account</kind>
+            <intent>ServiceAccount</intent>
+            <association>
+                <ref>ri:serviceAccountReporter2groupRef</ref>
+                <outbound>
+                    <name>account-group-outbound</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <associationConstruction>
+                            <objectRef>
+                                <mapping>
+                                    <expression>
+                                        <associationFromLink/>
+                                    </expression>
+                                </mapping>
+                            </objectRef>
+                        </associationConstruction>
+                    </expression>
+                </outbound>
+            </association>
+        </construction>
+        <orderConstraint>
+            <orderMin>1</orderMin>
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <focusType>UserType</focusType>
+        <condition>
+            <expression>
+                <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:type="c:ScriptExpressionEvaluatorType">
+                    <code><![CDATA[
+                        return midpoint.hasArchetype(focus,"a127666c-6775-4d74-a593-c16541a6ecde")
+                        ]]></code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+
+    <inducement>
+        <construction>
+            <resourceRef oid="90f3f8b4-daa8-4d22-8cb6-39a934acc558" type="ResourceType"/>
+            <strength>strong</strength>
+            <kind>account</kind>
+            <intent>ServiceAccount</intent>
+            <association>
+                <ref>ri:serviceAccountReporter2projectRef</ref>
+                <outbound>
+                    <name>account-group-outbound</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <associationConstruction>
+                            <objectRef>
+                                <mapping>
+                                    <expression>
+                                        <associationFromLink/>
+                                    </expression>
+                                </mapping>
+                            </objectRef>
+                        </associationConstruction>
+                    </expression>
+                </outbound>
+            </association>
+        </construction>
+        <orderConstraint>
+            <orderMin>1</orderMin>
+            <orderMax>unbounded</orderMax>
+        </orderConstraint>
+        <focusType>UserType</focusType>
+        <condition>
+            <expression>
+                <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:type="c:ScriptExpressionEvaluatorType">
+                    <code><![CDATA[
+                        return midpoint.hasArchetype(focus,"a127666c-6775-4d74-a593-c16541a6ecde")
+                        ]]></code>
+                </script>
+            </expression>
+        </condition>
+    </inducement>
+</role>
