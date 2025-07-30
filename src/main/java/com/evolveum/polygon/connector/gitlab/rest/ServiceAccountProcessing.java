@@ -16,7 +16,9 @@
 package com.evolveum.polygon.connector.gitlab.rest;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -27,6 +29,7 @@ import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -37,6 +40,7 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 	// optional attributes
 	private static final String ATTR_MAIL = "email";
 	private static final String ATTR_PUBLIC_EMAIL = "public_email";
+	private static final String ATTR_STATE = "state";
 	private static final String ATTR_GROUP_ID = "groupId";
 
 	public ServiceAccountProcessing(GitlabRestConfiguration configuration, CloseableHttpClient httpclient) {
@@ -65,13 +69,13 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		serviceAccountObjClassBuilder.addAttributeInfo(attrGroupIdBuilder.build());
 
 		AttributeInfoBuilder attrPublicEmailBuilder = new AttributeInfoBuilder(ATTR_PUBLIC_EMAIL);
-		attrPublicEmailBuilder.setRequired(true).setType(String.class).setCreateable(true).setUpdateable(true)
+		attrPublicEmailBuilder.setRequired(false).setType(String.class).setCreateable(true).setUpdateable(true)
 				.setReadable(true);
 		serviceAccountObjClassBuilder.addAttributeInfo(attrPublicEmailBuilder.build());
 
 
 		// __ENABLE__
-		/*serviceAccountObjClassBuilder.addAttributeInfo(OperationalAttributeInfos.ENABLE);*/
+		serviceAccountObjClassBuilder.addAttributeInfo(OperationalAttributeInfos.ENABLE);
 
 		schemaBuilder.defineObjectClass(serviceAccountObjClassBuilder.build());
 	}
@@ -106,24 +110,30 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 			}
 		}
 
+		Uid newUid;
+
 		if (groupId != null) {
 			String base = GROUPS + "/" + groupId + SERVICE_ACCOUNTS;
 			if (create) {
 				// POST /groups/{groupId}/service_accounts
-				return createPutOrPostRequest(null, base, json, true);
+				newUid = createPutOrPostRequest(null, base, json, true);
 			} else {
 				// PATCH /groups/{groupId}/service_accounts/{saId}
-				return patchRequest(uid, base, json, options);
+				newUid = patchRequest(uid, base, json, options);
+			}
+		} else {
+			if (create) {
+				// POST /service_accounts
+				newUid = createPutOrPostRequest(null, SERVICE_ACCOUNTS, json, true);
+			} else {
+				// PATCH /users/{id} //direct support for service_account endpoint not released yet
+				newUid = createPutOrPostRequest(uid, USERS, json,false);
 			}
 		}
 
-		if (create) {
-			// POST /service_accounts
-			return createPutOrPostRequest(null, SERVICE_ACCOUNTS, json, true);
-		} else {
-			// PATCH /users/{id} //direct support for service_account endpoint not released yet
-			return createPutOrPostRequest(uid, USERS, json,false);
-		}
+		changeStateIfExists(attributes, uid);
+
+		return newUid;
 	}
 
 	private ConnectorObjectBuilder convertUserJSONObjectToConnectorObject(JSONObject user, Set<String> sshKeys,
@@ -141,6 +151,10 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		if (user.has("provisioned_by_group_id") && !user.isNull("provisioned_by_group_id")) {
 			Integer groupId = ((Number) user.get("provisioned_by_group_id")).intValue();
 			builder.addAttribute(ATTR_GROUP_ID, groupId);
+		}
+		if (user.has(ATTR_STATE)) {
+			boolean enable = STATUS_ACTIVE.equals(user.get(ATTR_STATE).toString());
+			addAttr(builder, OperationalAttributes.ENABLE_NAME, enable);
 		}
 
 		return builder;
@@ -331,4 +345,42 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		}
 		return ids;
 	}
+
+	private void changeStateIfExists(Set<Attribute> attributes, Uid uid) {
+
+		LOGGER.info("ChangeStateIfExists attributes {0}, uid: {1}", attributes, uid);
+
+		Boolean valueAttr = getAttr(attributes, OperationalAttributes.ENABLE_NAME, Boolean.class, null);
+		if (valueAttr != null) {
+
+			URIBuilder uriBuilder = getURIBuilder();
+			URI uri;
+
+			StringBuilder sbPath = new StringBuilder();
+			sbPath.append(USERS).append("/").append(uid.getUidValue()).append("/");
+			if (valueAttr) {
+				sbPath.append("unblock");
+			} else {
+				sbPath.append("block");
+			}
+			uriBuilder.setPath(sbPath.toString());
+
+			try {
+				uri = uriBuilder.build();
+			} catch (URISyntaxException e) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("It was not possible create URI from UriBuider:").append(uriBuilder).append("; ")
+						.append(e.getLocalizedMessage());
+				throw new ConnectorException(sb.toString(), e);
+			}
+
+			HttpEntityEnclosingRequestBase request;
+			request = new HttpPost(uri);
+
+			// execute request
+			callRequest(request, false);
+		}
+	}
+
+
 }
