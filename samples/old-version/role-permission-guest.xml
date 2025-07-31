@@ -38,7 +38,7 @@
                                     <expression>
                                         <script>
                                             <code>
-                                                org = midpoint.getOrgByOid(orgUnit.getOid());
+                                                org = midpoint.getOrgByOid(orgUnit.getOid())
                                                 return org.getName()
                                             </code>
                                         </script>
@@ -63,13 +63,13 @@
                         xsi:type="c:ScriptExpressionEvaluatorType">
                     <code>
                         if(orgUnit != null){
-                        org = midpoint.getOrgByOid(orgUnit.getOid());
-                        types = org.getOrgType();
-                        if(types.contains('group')){
-                        return true;
+                            org = midpoint.getOrgByOid(orgUnit.getOid())
+                            types = org.getOrgType()
+                            if(types.contains('group')){
+                                return true
+                            }
                         }
-                        }
-                        return false;
+                        return false
                     </code>
                 </script>
             </expression>
@@ -101,7 +101,7 @@
                                     <expression>
                                         <script>
                                             <code>
-                                                org = midpoint.getOrgByOid(orgUnit.getOid());
+                                                org = midpoint.getOrgByOid(orgUnit.getOid())
                                                 return org.getName()
                                             </code>
                                         </script>
@@ -126,13 +126,13 @@
                         xsi:type="c:ScriptExpressionEvaluatorType">
                     <code>
                         if(orgUnit != null){
-                        org = midpoint.getOrgByOid(orgUnit.getOid());
-                        types = org.getOrgType();
-                        if(types.contains('project')){
-                        return true;
+                            org = midpoint.getOrgByOid(orgUnit.getOid())
+                            types = org.getOrgType()
+                            if(types.contains('project')){
+                                return true
+                            }
                         }
-                        }
-                        return false;
+                        return false
                     </code>
                 </script>
             </expression>

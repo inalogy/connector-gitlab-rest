@@ -1270,12 +1270,12 @@
                 <c:ref>icfs:name</c:ref>
                 <outbound>
                     <source>
-                        <c:path>$user/name</c:path>
+                        <c:path>$focus/name</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/name</c:path>
+                        <c:path>$focus/name</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -1283,12 +1283,12 @@
                 <c:ref>ri:name</c:ref>
                 <outbound>
                     <source>
-                        <c:path>$user/fullName</c:path>
+                        <c:path>$focus/fullName</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/fullName</c:path>
+                        <c:path>$focus/fullName</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -1299,7 +1299,7 @@
                 <inbound>
                     <strength>weak</strength>
                     <target>
-                        <c:path>$user/jpegPhoto</c:path>
+                        <c:path>$focus/jpegPhoto</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -1309,12 +1309,12 @@
                 <exclusiveStrong>false</exclusiveStrong>
                 <outbound>
                     <source>
-                        <c:path>$user/extension/sshKeys</c:path>
+                        <c:path>$focus/extension/sshKeys</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/extension/sshKeys</c:path>
+                        <c:path>$focus/extension/sshKeys</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -1325,13 +1325,13 @@
                 <outbound>
                     <strength>strong</strength>
                     <source>
-                        <c:path>$user/emailAddress</c:path>
+                        <c:path>$focus/emailAddress</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <strength>weak</strength>
                     <target>
-                        <c:path>$user/emailAddress</c:path>
+                        <c:path>$focus/emailAddress</c:path>
                     </target>
                 </inbound>
             </attribute>

@@ -187,12 +187,12 @@
                 <c:ref>icfs:name</c:ref>
                 <outbound>
                     <source>
-                        <c:path>$user/name</c:path>
+                        <c:path>$focus/name</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/name</c:path>
+                        <c:path>$focus/name</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -200,12 +200,12 @@
                 <c:ref>ri:name</c:ref>
                 <outbound>
                     <source>
-                        <c:path>$user/fullName</c:path>
+                        <c:path>$focus/fullName</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/fullName</c:path>
+                        <c:path>$focus/fullName</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -216,7 +216,7 @@
                 <inbound>
                     <strength>weak</strength>
                     <target>
-                        <c:path>$user/jpegPhoto</c:path>
+                        <c:path>$focus/jpegPhoto</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -226,12 +226,12 @@
                 <exclusiveStrong>false</exclusiveStrong>
                 <outbound>
                     <source>
-                        <c:path>$user/extension/sshKeys</c:path>
+                        <c:path>$focus/extension/sshKeys</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <target>
-                        <c:path>$user/extension/sshKeys</c:path>
+                        <c:path>$focus/extension/sshKeys</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -242,13 +242,13 @@
                 <outbound>
                     <strength>strong</strength>
                     <source>
-                        <c:path>$user/emailAddress</c:path>
+                        <c:path>$focus/emailAddress</c:path>
                     </source>
                 </outbound>
                 <inbound>
                     <strength>weak</strength>
                     <target>
-                        <c:path>$user/emailAddress</c:path>
+                        <c:path>$focus/emailAddress</c:path>
                     </target>
                 </inbound>
             </attribute>
@@ -407,11 +407,6 @@
             </attribute>
             <attribute>
                 <c:ref>ri:path</c:ref>
-                <!--<outbound>
-                    <source>
-                        <c:path>$focus/displayName</c:path>
-                    </source>
-                </outbound>-->
                 <inbound>
                     <target>
                         <c:path>$focus/displayName</c:path>
@@ -628,18 +623,6 @@
                 </reaction>
             </synchronization>
         </objectType>
-        <!--<association>
-            <c:ref>ri:Group-owner</c:ref>
-            <displayName>Owner membership for group</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Group</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:owner_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userOwner2group</name>
             <subject>
@@ -660,19 +643,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Group-master</c:ref>
-            <displayName>Master membership for group</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Group</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:master_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userMaster2group</name>
             <subject>
@@ -693,19 +663,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Group-developer</c:ref>
-            <displayName>Developer membership for group</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Group</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:developer_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userDeveloper2group</name>
             <subject>
@@ -726,19 +683,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Group-reporter</c:ref>
-            <displayName>Reporter membership for group</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Group</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:reporter_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userReporter2group</name>
             <subject>
@@ -759,19 +703,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Group-guest</c:ref>
-            <displayName>Guest membership for group</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Group</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:guest_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userGuest2group</name>
             <subject>
@@ -792,19 +723,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Project-master</c:ref>
-            <displayName>Master membership for project</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Project</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:master_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userMaster2project</name>
             <subject>
@@ -825,19 +743,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Project-developer</c:ref>
-            <displayName>Developer membership for project</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Project</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:developer_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userDeveloper2project</name>
             <subject>
@@ -858,19 +763,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Project-reporter</c:ref>
-            <displayName>Reporter membership for project</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Project</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:reporter_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userReporter2project</name>
             <subject>
@@ -891,19 +783,6 @@
                 </objectType>
             </object>
         </associationType>
-
-        <!--<association>
-            <c:ref>ri:Project-guest</c:ref>
-            <displayName>Guest membership for project</displayName>
-            <tolerant>true</tolerant>
-            <exclusiveStrong>false</exclusiveStrong>
-            <kind>entitlement</kind>
-            <intent>Project</intent>
-            <direction>objectToSubject</direction>
-            <associationAttribute>ri:guest_members</associationAttribute>
-            <valueAttribute>icfs:uid</valueAttribute>
-            <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-        </association>-->
         <associationType>
             <name>userGuest2project</name>
             <subject>
@@ -1113,18 +992,6 @@
         </associationType>
 
         <!--GROUP TO PROJECT-->
-        <!--<association>
-                <c:ref>ri:Shared Project-master</c:ref>
-                <displayName>Shared Project with max accesss level Master</displayName>
-                <tolerant>true</tolerant>
-                <exclusiveStrong>false</exclusiveStrong>
-                <kind>entitlement</kind>
-                <intent>Project</intent>
-                <direction>objectToSubject</direction>
-                <associationAttribute>ri:shared_with_groups_max_master</associationAttribute>
-                <valueAttribute>icfs:uid</valueAttribute>
-                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-            </association>-->
         <associationType>
             <name>groupMaster2project</name>
             <subject>
@@ -1145,19 +1012,6 @@
                 </objectType>
             </object>
         </associationType>
-
-            <!--<association>
-                <c:ref>ri:Shared Project-developer</c:ref>
-                <displayName>Shared Project with max accesss level Developer</displayName>
-                <tolerant>true</tolerant>
-                <exclusiveStrong>false</exclusiveStrong>
-                <kind>entitlement</kind>
-                <intent>Project</intent>
-                <direction>objectToSubject</direction>
-                <associationAttribute>ri:shared_with_groups_max_developer</associationAttribute>
-                <valueAttribute>icfs:uid</valueAttribute>
-                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-            </association>-->
         <associationType>
             <name>groupDeveloper2project</name>
             <subject>
@@ -1178,19 +1032,6 @@
                 </objectType>
             </object>
         </associationType>
-
-            <!--<association>
-                <c:ref>ri:Shared Project-reporter</c:ref>
-                <displayName>Shared Project with max accesss level Reporter</displayName>
-                <tolerant>true</tolerant>
-                <exclusiveStrong>false</exclusiveStrong>
-                <kind>entitlement</kind>
-                <intent>Project</intent>
-                <direction>objectToSubject</direction>
-                <associationAttribute>ri:shared_with_groups_reporter</associationAttribute>
-                <valueAttribute>icfs:uid</valueAttribute>
-                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-            </association>-->
         <associationType>
             <name>groupReporter2project</name>
             <subject>
@@ -1211,19 +1052,6 @@
                 </objectType>
             </object>
         </associationType>
-
-            <!--<association>
-                <c:ref>ri:Shared Project-guest</c:ref>
-                <displayName>Shared Project with max accesss level Guest</displayName>
-                <tolerant>true</tolerant>
-                <exclusiveStrong>false</exclusiveStrong>
-                <kind>entitlement</kind>
-                <intent>Project</intent>
-                <direction>objectToSubject</direction>
-                <associationAttribute>ri:shared_with_groups_max_guest</associationAttribute>
-                <valueAttribute>icfs:uid</valueAttribute>
-                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-            </association>-->
         <associationType>
             <name>groupGuest2project</name>
             <subject>

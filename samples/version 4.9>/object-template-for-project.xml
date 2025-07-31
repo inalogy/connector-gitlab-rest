@@ -77,59 +77,59 @@
 
                     if( members_with_name!=null &amp;&amp; focus.getOid() != null){
 
-                    for (member in members_with_name){
-                    userName = member.tokenize(':')[0];
-                    user = midpoint.searchObjectByName(UserType.class, userName);
-                    if(user!=null){
-                    access_level = member.tokenize(':')[1];
-                    roleName = '';
-                    if(access_level.equals('10')){
-                    roleName = 'guest';
-                    }
-                    if(access_level.equals('20')){
-                    roleName = 'reporter';
-                    }
-                    if(access_level.equals('30')){
-                    roleName = 'developer';
-                    }
-                    if(access_level.equals('40')){
-                    roleName = 'master';
-                    }
-                    role = midpoint.searchObjectByName(RoleType.class, roleName);
+                        for (member in members_with_name){
+                            userName = member.tokenize(':')[0]
+                            user = midpoint.searchObjectByName(UserType.class, userName)
+                            if(user!=null){
+                                access_level = member.tokenize(':')[1]
+                                roleName = ''
+                                if(access_level.equals('10')){
+                                    roleName = 'guest'
+                                }
+                                if(access_level.equals('20')){
+                                    roleName = 'reporter'
+                                }
+                                if(access_level.equals('30')){
+                                    roleName = 'developer'
+                                }
+                                if(access_level.equals('40')){
+                                    roleName = 'master'
+                                }
+                                role = midpoint.searchObjectByName(RoleType.class, roleName)
 
-                    if (role==null){
-                    throw new SystemException("Exception while assigning the permision role. Please make sure that all the role (permision role) are already added into Midpoint.");
-                    }
+                                if (role==null){
+                                    throw new SystemException("Exception while assigning the permision role. Please make sure that all the role (permision role) are already added into Midpoint.")
+                                }
 
-                    roleOrt = new ObjectReferenceType();
-                    roleOrt.setOid(role.getOid());
-                    roleOrt.setType(RoleType.COMPLEX_TYPE);
+                                roleOrt = new ObjectReferenceType()
+                                roleOrt.setOid(role.getOid())
+                                roleOrt.setType(RoleType.COMPLEX_TYPE)
 
-                    orgOrt = new ObjectReferenceType();
-                    orgOrt.setOid(focus.getOid());
-                    orgOrt.setType(OrgType.COMPLEX_TYPE);
+                                orgOrt = new ObjectReferenceType()
+                                orgOrt.setOid(focus.getOid())
+                                orgOrt.setType(OrgType.COMPLEX_TYPE)
 
-                    AssignmentType assignment = new AssignmentType();
-                    assignment.asPrismContainerValue()
-                    assignment.setTargetRef(roleOrt);
-                    assignment.setOrgRef(orgOrt);
+                                AssignmentType assignment = new AssignmentType()
+                                assignment.asPrismContainerValue()
+                                assignment.setTargetRef(roleOrt)
+                                assignment.setOrgRef(orgOrt)
 
-                    assignments = user.getAssignment();
-                    containsSameAssignment = false;
+                                assignments = user.getAssignment()
+                                containsSameAssignment = false
 
-                    for(userAssignment in assignments){
-                    if(role.getOid().equals(userAssignment.getTargetRef().getOid()) &amp;&amp; userAssignment.getOrgRef() != null &amp;&amp; focus.getOid().equals(userAssignment.getOrgRef().getOid())){
-                    containsSameAssignment = true;
-                    }
-                    }
+                                for(userAssignment in assignments){
+                                    if(role.getOid().equals(userAssignment.getTargetRef().getOid()) &amp;&amp; userAssignment.getOrgRef() != null &amp;&amp; focus.getOid().equals(userAssignment.getOrgRef().getOid())){
+                                        containsSameAssignment = true
+                                    }
+                                }
 
-                    if(!containsSameAssignment){
-                    delta = midpoint.prismContext.deltaFactory().object().createModificationAddContainer(UserType.class, user.getOid(), UserType.F_ASSIGNMENT, assignment);
+                                if(!containsSameAssignment){
+                                    delta = midpoint.prismContext.deltaFactory().object().createModificationAddContainer(UserType.class, user.getOid(), UserType.F_ASSIGNMENT, assignment)
 
-                    midpoint.executeChanges(delta)
-                    }
-                    }
-                    }
+                                    midpoint.executeChanges(delta)
+                                }
+                            }
+                        }
                     }
                 </code>
             </script>
@@ -159,60 +159,60 @@
 
                     if( shared_with_groups!=null &amp;&amp; focus.getOid() != null){
 
-                    for (group in shared_with_groups){
-                    groupName = group.tokenize(':')[0];
-                    orgUnit = midpoint.searchObjectByName(OrgType.class, groupName);
-                    if(orgUnit!=null){
-                    access_level = group.tokenize(':')[1];
-                    roleName = '';
-                    if(access_level.equals('10')){
-                    roleName = 'Max guest';
-                    }
-                    if(access_level.equals('20')){
-                    roleName = 'Max reporter';
-                    }
-                    if(access_level.equals('30')){
-                    roleName = 'Max developer';
-                    }
-                    if(access_level.equals('40')){
-                    roleName = 'Max master';
-                    }
-                    role = midpoint.searchObjectByName(RoleType.class, roleName);
+                        for (group in shared_with_groups){
+                            groupName = group.tokenize(':')[0]
+                            orgUnit = midpoint.searchObjectByName(OrgType.class, groupName)
+                            if(orgUnit!=null){
+                                access_level = group.tokenize(':')[1]
+                                roleName = ''
+                                if(access_level.equals('10')){
+                                    roleName = 'Max guest'
+                                }
+                                if(access_level.equals('20')){
+                                    roleName = 'Max reporter'
+                                }
+                                if(access_level.equals('30')){
+                                    roleName = 'Max developer'
+                                }
+                                if(access_level.equals('40')){
+                                    roleName = 'Max master'
+                                }
+                                role = midpoint.searchObjectByName(RoleType.class, roleName)
 
-                    if (role==null){
-                    throw new SystemException("Exception while assigning the permision role. Please make sure that all the role (permision role) are already added into Midpoint.");
-                    }
+                                if (role==null){
+                                    throw new SystemException("Exception while assigning the permision role. Please make sure that all the role (permision role) are already added into Midpoint.")
+                                }
 
-                    roleOrt = new ObjectReferenceType();
-                    roleOrt.setOid(role.getOid());
-                    roleOrt.setType(RoleType.COMPLEX_TYPE);
+                                roleOrt = new ObjectReferenceType()
+                                roleOrt.setOid(role.getOid())
+                                roleOrt.setType(RoleType.COMPLEX_TYPE)
 
-                    orgOrt = new ObjectReferenceType();
-                    orgOrt.setOid(focus.getOid());
-                    orgOrt.setType(OrgType.COMPLEX_TYPE);
+                                orgOrt = new ObjectReferenceType()
+                                orgOrt.setOid(focus.getOid())
+                                orgOrt.setType(OrgType.COMPLEX_TYPE)
 
-                    AssignmentType assignment = new AssignmentType();
-                    assignment.asPrismContainerValue()
-                    assignment.setTargetRef(roleOrt);
-                    assignment.setOrgRef(orgOrt);
+                                AssignmentType assignment = new AssignmentType()
+                                assignment.asPrismContainerValue()
+                                assignment.setTargetRef(roleOrt)
+                                assignment.setOrgRef(orgOrt)
 
 
-                    assignments = orgUnit.getAssignment();
-                    containsSameAssignment = false;
+                                assignments = orgUnit.getAssignment()
+                                containsSameAssignment = false
 
-                    for(userAssignment in assignments){
-                    if(role.getOid().equals(userAssignment.getTargetRef().getOid()) &amp;&amp; userAssignment.getOrgRef() != null &amp;&amp; focus.getOid().equals(userAssignment.getOrgRef().getOid())){
-                    containsSameAssignment = true;
-                    }
-                    }
+                                for(userAssignment in assignments){
+                                    if(role.getOid().equals(userAssignment.getTargetRef().getOid()) &amp;&amp; userAssignment.getOrgRef() != null &amp;&amp; focus.getOid().equals(userAssignment.getOrgRef().getOid())){
+                                        containsSameAssignment = true
+                                    }
+                                }
 
-                    if(!containsSameAssignment){
-                    delta = midpoint.prismContext.deltaFactory().object().createModificationAddContainer(OrgType.class, orgUnit.getOid(), UserType.F_ASSIGNMENT, assignment);
+                                if(!containsSameAssignment){
+                                    delta = midpoint.prismContext.deltaFactory().object().createModificationAddContainer(OrgType.class, orgUnit.getOid(), UserType.F_ASSIGNMENT, assignment)
 
-                    midpoint.executeChanges(delta)
-                    }
-                    }
-                    }
+                                    midpoint.executeChanges(delta)
+                                }
+                            }
+                        }
                     }
                 </code>
             </script>
