@@ -131,7 +131,7 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 			}
 		}
 
-		changeStateIfExists(attributes, uid);
+		changeStateIfExists(attributes, newUid);
 
 		return newUid;
 	}
