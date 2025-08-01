@@ -65,6 +65,7 @@ public class GitlabRestConnector
 	private static final String PROJECTS = "/projects";
 
 	private static final String PROJECT_NAME = "Project";
+	protected static final String SERVICE_ACCOUNT_NAME = "ServiceAccount";
 
 	private Schema schema = null;
 	private CloseableHttpClient httpclient;
@@ -104,10 +105,12 @@ public class GitlabRestConnector
 		if (this.schema == null) {
 			SchemaBuilder schemaBuilder = new SchemaBuilder(GitlabRestConnector.class);
 			UserProcessing userProcessing = new UserProcessing(configuration, httpclient);
+			ServiceAccountProcessing serviceAccountProcessing = new ServiceAccountProcessing(configuration, httpclient);
 			GroupProcessing groupProcessing = new GroupProcessing(configuration, httpclient);
 			ProjectProcessing projectProcessing = new ProjectProcessing(configuration, httpclient);
 
 			userProcessing.buildUserObjectClass(schemaBuilder);
+			serviceAccountProcessing.buildServiceAccountObjectClass(schemaBuilder);
 			groupProcessing.buildGroupObjectClass(schemaBuilder);
 			projectProcessing.buildProjectObjectClass(schemaBuilder);
 			return schemaBuilder.build();
@@ -129,6 +132,9 @@ public class GitlabRestConnector
 		if (objectClass.is(ObjectClass.ACCOUNT_NAME)) { // __ACCOUNT__
 			UserProcessing userProcessing = new UserProcessing(configuration, httpclient);
 			return userProcessing.createOrUpdateUser(null, attributes);
+		} else if (objectClass.is(ServiceAccountProcessing.SERVICE_ACCOUNT_NAME)) { //ServiceAccount
+			ServiceAccountProcessing serviceAccountProcessing = new ServiceAccountProcessing(configuration,httpclient);
+			return serviceAccountProcessing.createOrUpdateServiceAccount(null,attributes,operationOptions);
 		} else if (objectClass.is(ObjectClass.GROUP_NAME)) { // __GROUP__
 			GroupProcessing groupProcessing = new GroupProcessing(configuration, httpclient);
 			return groupProcessing.createOrUpdateGroup(null, attributes, operationOptions);
@@ -157,7 +163,7 @@ public class GitlabRestConnector
 
 		ObjectProcessing objectProcessing = new ObjectProcessing(configuration, httpclient);
 
-		if (objectClass.is(ObjectClass.ACCOUNT_NAME)) { // __ACCOUNT__
+		if (objectClass.is(ObjectClass.ACCOUNT_NAME) || objectClass.is(SERVICE_ACCOUNT_NAME)) { // __ACCOUNT__ || ServiceAccount
 			objectProcessing.executeDeleteOperation(uid, USERS);
 		} else if (objectClass.is(ObjectClass.GROUP_NAME)) { // __GROUP__
 			objectProcessing.executeDeleteOperation(uid, GROUPS);
@@ -202,6 +208,10 @@ public class GitlabRestConnector
 		if (objectClass.is(ObjectClass.ACCOUNT_NAME)) {
 			UserProcessing userProcessing = new UserProcessing(configuration, httpclient);
 			userProcessing.executeQueryForUser(query, handler, options);
+
+		} else if (objectClass.is(SERVICE_ACCOUNT_NAME)) {
+			ServiceAccountProcessing serviceAccountProcessing = new ServiceAccountProcessing(configuration, httpclient);
+			serviceAccountProcessing.executeQueryForServiceAccount(query, handler, options);
 
 		} else if (objectClass.is(ObjectClass.GROUP_NAME)) {
 			GroupProcessing groupProcessing = new GroupProcessing(configuration, httpclient);
@@ -279,6 +289,19 @@ public class GitlabRestConnector
 				return ret;
 			}
 
+		} else if (objectClass.is(ServiceAccountProcessing.SERVICE_ACCOUNT_NAME)) { // SERVICE_ACCOUNT
+			Set<AttributeDelta> result = new HashSet<>();
+			Uid newUid = null;
+			if (!attributeReplace.isEmpty()) {
+				ServiceAccountProcessing sap =
+						new ServiceAccountProcessing(configuration, httpclient);
+				newUid = sap.createOrUpdateServiceAccount(uid, attributeReplace, options);
+			}
+
+			if (newUid != null && !newUid.equals(uid)) {
+				result.add(AttributeDeltaBuilder.build(Uid.NAME, newUid.getValue()));
+			}
+			return result;
 		} else if (objectClass.is(ObjectClass.GROUP_NAME)) { // __GROUP__
 			Set<AttributeDelta> ret = new HashSet<AttributeDelta>();
 			Uid newUid = null;

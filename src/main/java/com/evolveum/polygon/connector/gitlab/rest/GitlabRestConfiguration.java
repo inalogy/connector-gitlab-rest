@@ -35,7 +35,8 @@ public class GitlabRestConfiguration extends AbstractConfiguration implements St
     private String protocol;
 	private GuardedString privateToken;
     private String groupsToManage;
-    private String objectAvatar;
+    private String objectAvatar = "false";
+	private String onlyHumanAccounts = "true";
 	private static final Log LOGGER = Log.getLog(GitlabRestConnector.class);
         
 
@@ -134,5 +135,13 @@ public class GitlabRestConfiguration extends AbstractConfiguration implements St
 		return "ScimConnectorConfiguration{" +
 				", loginUrl='" + loginUrl + '\'' +
 				'}';
+	}
+
+	public String getOnlyHumanAccounts() {
+		return onlyHumanAccounts;
+	}
+
+	public void setOnlyHumanAccounts(String onlyHumanAccounts) {
+		this.onlyHumanAccounts = onlyHumanAccounts;
 	}
 }

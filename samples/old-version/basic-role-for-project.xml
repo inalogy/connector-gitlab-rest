@@ -1,0 +1,13 @@
+<role xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      oid="d170e751-5867-43cc-a69c-89ede66c6e07">
+   <name>Basic GitLab role for project</name>
+   <inducement>
+      <construction>
+         <resourceRef oid="1c151bec-fa20-4097-bc64-0462ab2e5b7a"
+                      type="c:ResourceType"><!-- Gitlab --></resourceRef>
+         <kind>entitlement</kind>
+         <intent>Project</intent>
+      </construction>
+   </inducement>
+</role>

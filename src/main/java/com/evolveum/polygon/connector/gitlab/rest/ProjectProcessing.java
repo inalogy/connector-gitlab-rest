@@ -245,7 +245,7 @@ public class ProjectProcessing extends GroupOrProjectProcessing {
 		projectObjClassBuilder.addAttributeInfo(attrCreatorIDBuilder.build());
 
 		AttributeInfoBuilder attrNameSpaceIdBuilder = new AttributeInfoBuilder(ATTR_NAMESPACE_ID);
-		attrNameSpaceIdBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrNameSpaceIdBuilder.setType(Integer.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		projectObjClassBuilder.addAttributeInfo(attrNameSpaceIdBuilder.build());
 
 		AttributeInfoBuilder attrNameSpaceNameBuilder = new AttributeInfoBuilder(ATTR_NAMESPACE_NAME);
@@ -309,7 +309,7 @@ public class ProjectProcessing extends GroupOrProjectProcessing {
 		projectObjClassBuilder.addAttributeInfo(attrOwnerUsernameBuilder.build());
 
 		AttributeInfoBuilder attrOwnerIdBuilder = new AttributeInfoBuilder(ATTR_OWNER_ID);
-		attrOwnerIdBuilder.setType(String.class).setCreateable(false).setUpdateable(false).setReadable(true);
+		attrOwnerIdBuilder.setType(Integer.class).setCreateable(false).setUpdateable(false).setReadable(true);
 		projectObjClassBuilder.addAttributeInfo(attrOwnerIdBuilder.build());
 
 		AttributeInfoBuilder attrOwnerStateBuilder = new AttributeInfoBuilder(ATTR_OWNER_STATE);
@@ -387,6 +387,11 @@ public class ProjectProcessing extends GroupOrProjectProcessing {
 		attrMasterMembersBuilder.setType(String.class).setMultiValued(true).setCreateable(true).setUpdateable(true)
 				.setReadable(true);
 		projectObjClassBuilder.addAttributeInfo(attrMasterMembersBuilder.build());
+
+		AttributeInfoBuilder attrOwnerMembersBuilder = new AttributeInfoBuilder(ATTR_OWNER_MEMBERS);
+		attrOwnerMembersBuilder.setType(String.class).setMultiValued(true).setCreateable(true).setUpdateable(true)
+				.setReadable(true);
+		projectObjClassBuilder.addAttributeInfo(attrOwnerMembersBuilder.build());
 
 		AttributeInfoBuilder attrSharedWithGroupsMaxGuestBuilder = new AttributeInfoBuilder(
 				ATTR_SHARED_WITH_GROUPS_ID_MAX_GUEST);
