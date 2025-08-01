@@ -64,7 +64,7 @@ public class ServiceAccountProcessing extends ObjectProcessing {
 		serviceAccountObjClassBuilder.addAttributeInfo(attrNameBuilder.build());
 
 		AttributeInfoBuilder attrGroupIdBuilder = new AttributeInfoBuilder(ATTR_GROUP_ID);
-		attrGroupIdBuilder.setRequired(true).setType(Integer.class).setCreateable(true).setUpdateable(true)
+		attrGroupIdBuilder.setRequired(false).setType(Integer.class).setCreateable(true).setUpdateable(true)
 				.setReadable(true);
 		serviceAccountObjClassBuilder.addAttributeInfo(attrGroupIdBuilder.build());
 
