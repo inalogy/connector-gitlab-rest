@@ -84,3 +84,38 @@ The `gitlab/samples` directory contains two sets of MidPoint resource examples:
 - `v4.9+/`: updated resource definitions compatible with **MidPoint 4.9 and newer**.
   - Includes working association definitions and schema-compliant structures.
   - These samples are ready to use out of the box with the upgraded GitLab connector.
+
+# 🔐 CI/CD: Setting up `GITLAB_TOKEN` for GitLab Release
+
+To allow the GitLab CI pipeline to automatically create a release when a tag is pushed (e.g. `v1.2.3`), you must define a CI/CD variable named `GITLAB_TOKEN`.
+
+## 📌 Steps:
+
+1. Go to your GitLab project
+2. Open **Settings → CI/CD**
+3. Expand the **Variables** section
+4. Click **“Add variable”**
+5. Fill in the following fields:
+
+| Field        | Value                                                  |
+|--------------|---------------------------------------------------------|
+| **Key**      | `GITLAB_TOKEN`                                          |
+| **Value**    | Your Personal Access Token or Project Access Token      |
+| **Type**     | Environment variable (default)                          |
+| **Masked**   | ✅ Yes                                                  |
+| **Protected**| ✅ Yes (if using protected branches/tags)               |
+
+## ✅ Recommended token types and permissions:
+
+| Token Type           | Where to create it                                             | Required Scope |
+|----------------------|----------------------------------------------------------------|----------------|
+| Personal Access Token| [https://gitlab.com/-/profile/personal_access_tokens](https://gitlab.com/-/profile/personal_access_tokens) | `api`          |
+| Project Access Token | **Project → Settings → Access Tokens**                        | `api`          |
+
+Make sure to **store the token securely** and copy it only once. The token will be used by the pipeline to authenticate with the GitLab API when creating the release.
+
+---
+
+## ℹ️ Note about GitHub
+
+For GitHub Actions, no manual token setup is required. A built-in `GITHUB_TOKEN` is automatically provided and used to authenticate GitHub API calls such as creating a release.

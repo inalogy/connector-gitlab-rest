@@ -1,0 +1,8 @@
+# .gitlab-ci.yml v root-e
+include:
+  - local: '.gitlab/ci/build.yml'
+  - local: '.gitlab/ci/release.yml'
+
+stages:
+  - build
+  - release

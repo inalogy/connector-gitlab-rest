@@ -1,0 +1,27 @@
+stages:
+  - build
+
+variables:
+  MAVEN_CLI_OPTS: "-B -DskipTests=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+  JAR_PATH: "target/connector-gitlab-rest-${CI_COMMIT_TAG#v}.jar"
+
+cache:
+  paths:
+    - .m2/repository
+
+build:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - echo "Extracting version from pom.xml..."
+    - export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    - echo "VERSION=$VERSION"
+    - mvn $MAVEN_CLI_OPTS clean install
+    - echo "Build complete."
+  artifacts:
+    paths:
+      - $JAR_PATH
+    expire_in: 1 hour
+  only:
+    - tags
